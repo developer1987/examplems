@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	
+    <property name="autoIncrement" value="false" dbms="postgresql,mssql,oracle"/>
+    <property name="autoIncrement" value="true" dbms="h2"/>
+
+	<changeSet id="1.00.03-createContactTypeTable" author="azverev">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="t_contact_type"/>
+			</not>
+		</preConditions>
+
+		<createSequence sequenceName="t_contact_type_seq" incrementBy="1" startValue="1001"/>
+
+		<createTable tableName="t_contact_type">
+			<column name="id" type="bigint" autoIncrement="${autoIncrement}" defaultValueSequenceNext="t_contact_type_seq">
+				<constraints primaryKey="true" primaryKeyName="t_contact_type_pk" nullable="false" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<comment>Create contact type table</comment>
+	</changeSet>
+
+	<changeSet id="1.00.03-createContactTable" author="azverev">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="t_contact"/>
+			</not>
+		</preConditions>
+
+		<createSequence sequenceName="t_contact_seq" incrementBy="1" startValue="1001"/>
+
+		<createTable tableName="t_contact">
+			<column name="id" type="bigint" autoIncrement="${autoIncrement}" defaultValueSequenceNext="t_contact_seq">
+				<constraints primaryKey="true" primaryKeyName="t_contact_pk" nullable="false" />
+			</column>
+			<column name="user_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="contact_type_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="value" type="VARCHAR(10)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<comment>Create contact table</comment>
+	</changeSet>
+
+</databaseChangeLog>

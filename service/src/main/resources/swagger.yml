@@ -1,0 +1,139 @@
+swagger: '2.0'
+info:
+  version: '1.01.01-SNAPSHOT'
+  title: Template
+tags:
+  - name: template-controller
+paths:
+  /ping:
+    get:
+      summary: Get method example
+      operationId: ping
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+  /hello:
+    get:
+      summary: Get method example
+      operationId: hello
+      parameters:
+        - in: query
+          name: name
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+      x-security:
+        pre-authorize: "hasAnyAuthority('dca, ACCOUNT_READ, user')"
+  /v1/template:
+    post:
+      summary: Creation a new template.
+      operationId: templateCreate
+      parameters:
+        - in: body
+          name: template
+          description: Template
+          required: true
+          schema:
+            $ref: '#/definitions/Template'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Template'
+    get:
+      summary: Searching templates by parametes.
+      operationId: templateFindByParams
+      x-meta:
+        pageable: true
+        predicate: true         
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Template'
+  /v1/template/{id}:
+    put:
+      summary: Modification of a template.
+      operationId: templateModify
+      parameters:        
+        - name: id
+          in: path
+          description: TemplateID
+          required: true
+          type: integer
+          format: int64    
+        - in: body
+          name: template
+          description: Template
+          required: true
+          schema:
+            $ref: '#/definitions/Template'  
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Template'
+    get:
+      summary: Searching a template by Id.
+      operationId: tempalteFindById
+      parameters:
+        - name: id
+          in: path
+          description: TemplateID
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Template'
+definitions:
+  Template:
+    type: object
+    description: Demo object
+    x-db:
+      table: t_template
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: Unique identifier
+        x-db:
+          column: templateid
+          id: true
+          idGenerator:
+            type: sequence
+            name: t_template_templateid_seq
+            initialValue: 1000
+      testKey:
+        type: string
+        description: Test key
+        x-db:
+          column: testkey
+      testInt:
+        type: integer
+        format: int32
+        description: Test int value
+        x-db:
+          column: testint
+      testBalance:
+        type: number
+        description: Test balance value (BigDecimal)
+        x-db:
+          column: testbalance
+      testDate:
+        type: string
+        format: date
+        description: Test localDate value (full-date - RFC3339) 
+        x-db:
+          column: testdate
+    title: Template

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ru.diasoft.micro</groupId>
+        <artifactId>examplems</artifactId>
+        <version>1.01.01-SNAPSHOT</version>
+    </parent>
+    <artifactId>examplemsms</artifactId>
+    <name>Microservice for examplems</name>
+
+    <build>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                    <jvmArguments>-Dfile.encoding=UTF8</jvmArguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.3.6</version>
+                <configuration>
+                    <repository>${docker.image.prefix}/${project.artifactId}</repository>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>ex1</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>ex2</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- DQCodeGen https://conf.diasoft.ru/pages/viewpage.action?pageId=44771672 -->
+                <groupId>ru.diasoft.digitalq.codegen</groupId>
+                <artifactId>dqcodegen-maven-plugin</artifactId>
+                <version>${dqcodegen.version}</version>                
+                <executions>
+                    <execution>
+                        <id>Generate REST Controller by Swagger file</id>
+                        <!-- DQCodeGen params https://conf.diasoft.ru/pages/viewpage.action?pageId=50894438 -->
+                        <goals>
+                            <goal>local</goal>
+                        </goals>
+                        <configuration>
+                            <!--<skip>false</skip>-->                                                     
+                            <serviceName>Template</serviceName>
+                            <targetPackage>ru.diasoft.micro</targetPackage>
+                            <!--<targetFolder>${project.build.directory}/generated-sources/dqcodegen</targetFolder>-->
+                            <swaggerFile>${project.basedir}/src/main/resources/swagger.yml</swaggerFile> 
+                            <!--<asyncApiFile>${project.basedir}/src/main/resources/asyncapi.json</asyncApiFile>-->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Generate REST Controller by Q.Archer</id>
+                        <!-- DQCodeGen+Q.Archer https://conf.diasoft.ru/pages/viewpage.action?pageId=121474970 -->
+                        <goals>
+                            <goal>qarcher</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>                             
+                            <serviceName>QArcherDemo</serviceName> 
+                            <!--<targetPackage>${project.groupId}</targetPackage>-->                           
+                            <!--<targetFolder>${project.build.directory}/generated-sources/dqcodegen</targetFolder>-->
+                            <!--<swaggerFile>${project.basedir}/src/main/resources/swagger.json</swaggerFile>--> 
+                            <!--<asyncApiFile>${project.basedir}/src/main/resources/asyncapi.json</asyncApiFile>-->                                                      
+                            <qarcherModuleName>DQ Mobile Investment Client Portfolio</qarcherModuleName>
+                            <qarcherVersion>1.01.01</qarcherVersion>
+                            <!--<qarcherService>http://dsagregator2:8030</qarcherService>-->
+                            <!--<qarcherApproval></qarcherApproval>-->
+                            <!--<qarcherConditionalApproval></qarcherConditionalApproval>-->
+                            <!--<qarcherImplemented></qarcherImplemented>-->
+                            <!--<qarcherRelease></qarcherRelease>-->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Generate Events Publisher</id>
+                        <!-- DQCodeGen+Event-Driven Architectures (EDA). conf.diasoft.ru/pages/viewpage.action?pageId=50894482 -->
+                        <goals>
+                            <goal>local</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>                                                     
+                            <!--<serviceName>${project.artifactId}</serviceName>-->                           
+                            <!--<targetPackage>${project.groupId}</targetPackage>-->                           
+                            <!--<targetFolder>${project.build.directory}/generated-sources/dqcodegen</targetFolder>-->
+                            <!--<swaggerFile>${project.basedir}/src/main/resources/swagger.yml</swaggerFile>--> 
+                            <asyncApiFile>${project.basedir}/src/main/resources/event-publisher.yml</asyncApiFile>                            
+                        </configuration>
+                    </execution> 
+                    <execution>
+                        <id>Generate Events Subsriber</id>
+                        <!-- DQCodeGen+Event-Driven Architectures (EDA). conf.diasoft.ru/pages/viewpage.action?pageId=50894482 -->
+                        <goals>
+                            <goal>local</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>                                                     
+                            <!--<serviceName>${project.artifactId}</serviceName>-->                           
+                            <!--<targetPackage>${project.groupId}</targetPackage>-->                           
+                            <!--<targetFolder>${project.build.directory}/generated-sources/dqcodegen</targetFolder>-->
+                            <!--<swaggerFile>${project.basedir}/src/main/resources/swagger.yml</swaggerFile>--> 
+                            <asyncApiFile>${project.basedir}/src/main/resources/event-subscriber.yml</asyncApiFile>                            
+                        </configuration>
+                    </execution>                                       
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-generated</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/target/generated-sources/querydsl</source>
+                                <source>${basedir}/target/generated-sources/dqcodegen</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mysema.maven</groupId>
+                <artifactId>apt-maven-plugin</artifactId>
+                <version>1.1.3</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/generated-sources/querydsl</outputDirectory>
+                            <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- attached to Maven test phase -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-dependency-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>unpack</id>-->
+                        <!--<phase>test-compile</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>unpack</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<artifactItems>-->
+                                <!--<artifactItem>-->
+                                    <!--<artifactId>examplemsdb</artifactId>-->
+                                    <!--<groupId>ru.diasoft.micro</groupId>-->
+                                    <!--<version>${project.version}</version>-->
+                                    <!--<type>jar</type>-->
+                                    <!--<overWrite>false</overWrite>-->
+                                    <!--<outputDirectory>${project.build.directory}/test-classes/liquibase-extracted</outputDirectory>-->
+                                    <!--<includes>**/*</includes>-->
+                                <!--</artifactItem>-->
+                            <!--</artifactItems>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+        </plugins>
+        <!--<pluginManagement>-->
+            <!--<plugins>-->
+                <!--&lt;!&ndash;This plugin's configuration is used to store Eclipse m2e settings -->
+                <!--only. It has no influence on the Maven build itself. &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.eclipse.m2e</groupId>-->
+                    <!--<artifactId>lifecycle-mapping</artifactId>-->
+                    <!--<version>1.0.0</version>-->
+                    <!--<configuration>-->
+                        <!--<lifecycleMappingMetadata>-->
+                            <!--<pluginExecutions>-->
+                                <!--<pluginExecution>-->
+                                    <!--<pluginExecutionFilter>-->
+                                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                                        <!--<artifactId>maven-dependency-plugin</artifactId>-->
+                                        <!--<versionRange>[1.0,)</versionRange>-->
+                                        <!--<goals>-->
+                                            <!--<goal>unpack</goal>-->
+                                        <!--</goals>-->
+                                    <!--</pluginExecutionFilter>-->
+                                    <!--<action>-->
+                                        <!--<execute />-->
+                                    <!--</action>-->
+                                <!--</pluginExecution>-->
+                            <!--</pluginExecutions>-->
+                        <!--</lifecycleMappingMetadata>-->
+                    <!--</configuration>-->
+                <!--</plugin>-->
+            <!--</plugins>-->
+        <!--</pluginManagement>-->
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ru.diasoft.micro.mdp.lib</groupId>
+            <artifactId>mdpquerydsl</artifactId>
+            <version>${mdpquerydsl.version}</version>
+        </dependency>
+        <!-- JDBC -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc7</artifactId>
+            <version>12.1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+
+        <!-- Security -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-oauth2</artifactId>
+        </dependency>
+
+        <!-- Spring Cloud Streams Kafka -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+        </dependency>
+
+        <!-- Serivice Discovery -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Swagger -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.5.21</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>1.5.21</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version>
+        </dependency>
+
+        <!-- Trace -->
+        <dependency>
+            <groupId>ru.diasoft.flextera</groupId>
+            <artifactId>dstrace-spring-boot-starter-rest</artifactId>
+            <version>${dstrace.version}</version>
+        </dependency>
+        <!--dependency>
+                <groupId>ru.diasoft.flextera</groupId>
+                <artifactId>dstrace-spring-boot-starter-jpa</artifactId>
+                <version>${dstrace.version}</version>
+        </dependency-->
+        <dependency>
+            <groupId>ru.diasoft.flextera</groupId>
+            <artifactId>dstrace-spring-boot-starter-cloud-stream</artifactId>
+            <version>${dstrace.version}</version>
+        </dependency>
+
+        <!-- diasoft platform -->
+        <dependency>
+            <groupId>ru.diasoft.digitalq.libs</groupId>
+            <artifactId>dqapiexception</artifactId>
+            <version>${dqapiexception.version}</version>
+        </dependency>
+        
+        <!-- Dev tools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Tests -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

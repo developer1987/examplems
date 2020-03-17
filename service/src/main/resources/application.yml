@@ -1,0 +1,82 @@
+server:
+  port: ${SERVICE_PORT}
+
+eureka:
+  client:
+    enabled: ${EUREKA_CLIENT_ENABLED}  
+    registerWithEureka: ${EUREKA_CLIENT_ENABLED}
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}
+  instance:
+    prefer-ip-address: ${EUREKA_PREFEREDIP_ENABLED}
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+    
+security:
+  enabled: true
+  oauth2: 
+    client: 
+      clientId: ${OAUTH2_CLIENT_ID}
+      clientSecret: ${OAUTH2_CLIENT_SECRET} 
+      scope: openid
+      accessTokenUri: ${AUTH_SERVER_URL}/uaa/oauth/token
+      userAuthorizationUri: ${AUTH_SERVER_URL}/uaa/oauth/authorize
+    resource: 
+      jwt: 
+        key-uri: ${AUTH_SERVER_URL}/uaa/oauth/token_key
+        
+spring:
+  datasource:
+    driverClassName: ${DB_DRIVER}
+    url: ${DB_URL}
+    username: ${DB_LOGIN}
+    password: ${DB_PASSWORD}
+    hikari:
+      connection-test-query: ${DB_TEST_QUERY:}
+      maximumPoolSize: ${HIKARI_MAXIMUM_POOLSIZE:10}
+      minimumIdle: ${HIKARI_MINIMUM_IDLE:10}
+      idleTimeout: ${HIKARI_IDLE_TIMEOUT:600000}
+      connectionTimeout: ${HIKARI_CONNECTION_TIMEOUT:30000}
+      maxLifetime: ${HIKARI_MAX_LIFETIME:1800000}      
+  jpa:
+    database-platform: ${JPA_DIALECT}
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+      naming: 
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        globally_quoted_identifiers: ${DB_QUOTED_IDENTIFIERS:false}
+        jdbc:
+          lob:
+            non_contextual_creation: true
+# Generate Events Publisher or Subsriber    
+#  kafka:
+#    bootstrap-servers: ${KAFKA_URL}  
+#  cloud:      
+#    stream:
+#      binders:
+#        binderName:
+#          type: kafka
+#      bindings:
+#        eventHelloPublish:
+#          destination: event-hello
+#        eventHelloSubscribe:
+#          destination: event-hello 
+  messages:
+    basename: i18n.messages
+        
+dstrace:
+  enabled: ${TRACER_ENABLE:true}
+  mode: develop
+  collector:
+    type: http
+    address: ${TRACER_HOST:localhost}:${TRACER_PORT:9411}
+    
+logging:
+  config: classpath:log4j2.xml
+  level:
+    ROOT: ${LOGGING_ROOT_LEVEL:INFO}
+    ru.diasoft.micro: ${LOGGING_LEVEL:DEBUG}
+    org.hibernate.type: ${LOGGING_HIBERNATE_LEVEL:INFO} #To log values set TRACE 

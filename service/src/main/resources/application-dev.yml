@@ -1,0 +1,128 @@
+server:
+  port: 7081
+
+eureka:
+  client:
+    enabled: false
+    fetchRegistry: false
+    registerWithEureka: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+security: 
+  enabled: false
+#  oauth2: 
+#    client: 
+#      clientId: client
+#      clientSecret: secret 
+#      scope: openid
+#      accessTokenUri: http://localhost:8500/uaa/oauth/token
+#      userAuthorizationUri: http://localhost:8500/uaa/oauth/authorize
+#    resource: 
+#      jwt: 
+#        key-uri: http://localhost:8500/uaa/oauth/token_key
+  oauth2: 
+    client: 
+      clientId:
+      clientSecret: 
+      scope:
+      accessTokenUri:
+      userAuthorizationUri:
+    resource: 
+      jwt: 
+        key-uri:
+        
+# Postgres
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/exampledb
+    username: postgres
+    password: postgres
+    hikari:
+      connection-test-query:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true # Для PostgreSQL установить в true, для MSSQL, Oracle в false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+# Oracle
+#spring:
+#  datasource:
+#    driverClassName: oracle.jdbc.OracleDriver
+#    url: jdbc:oracle:thin:@aml2devops:1521:tstdf
+#    username: TEMPLATE
+#    password: TEMPLATE
+#    hikari:
+#      connection-test-query:
+#  jpa:
+#    database-platform: org.hibernate.dialect.Oracle10gDialect
+#    show-sql: true
+#    generate-ddl: false
+#    hibernate:
+#      ddl-auto: none
+#      naming: 
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#    properties:
+#      hibernate:
+#        globally_quoted_identifiers: false # Для PostgreSQL установить в true, для MSSQL, Oracle в false
+#        jdbc:
+#          lob:
+#            non_contextual_creation: true
+
+# h2
+#spring:
+#  datasource:
+#    driverClassName: org.h2.Driver
+#    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+#    username: sa
+#    password:
+#  jpa:
+#    database-platform: org.hibernate.dialect.H2Dialect
+#    show-sql: true
+#    generate-ddl: true
+#    hibernate:
+#      ddl-auto: none
+#      naming:
+#        physical-strategy: ru.diasoft.micro.config.H2PhysicalNamingStrategy
+#    properties:
+#      hibernate:
+#        jdbc:
+#          lob:
+#            non_contextual_creation: true
+
+# Generate Events Publisher or Subsriber
+#  kafka:
+#    bootstrap-servers: localhost:9092   
+#  cloud:      
+#    stream:
+#      binders:
+#        binderName:
+#          type: kafka
+#      bindings:
+#        eventHelloPublish:
+#          destination: event-hello
+#        eventHelloSubscribe:
+#          destination: event-hello   
+
+dstrace:
+  enabled: false
+
+logging:
+  config: classpath:log4j2.xml
+  level:
+    ROOT: INFO
+    ru.diasoft.micro: DEBUG
+    org.hibernate.type: INFO         

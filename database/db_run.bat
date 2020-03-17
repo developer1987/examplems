@@ -1,0 +1,1 @@
+dm.bat -i --url=jdbc:postgresql://localhost:5432 --database=exampledb --username=postgres --password=postgres --driver=org.postgresql.Driver

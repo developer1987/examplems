@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	
+    <property name="autoIncrement" value="false" dbms="postgresql,mssql,oracle"/>
+    <property name="autoIncrement" value="true" dbms="h2"/>
+
+	<changeSet id="1.00.02-createUserTable" author="azverev">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="t_user"/>
+			</not>
+		</preConditions>
+
+		<createSequence sequenceName="t_user_seq" incrementBy="1" startValue="1"/>
+
+		<createTable tableName="t_user">
+			<column name="id" type="bigint" autoIncrement="${autoIncrement}" defaultValueSequenceNext="t_user_seq">
+				<constraints primaryKey="true" primaryKeyName="t_user_pk" nullable="false" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<comment>Create user table</comment>
+	</changeSet>
+
+</databaseChangeLog>

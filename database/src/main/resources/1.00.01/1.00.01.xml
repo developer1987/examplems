@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+    <property name="autoIncrement" value="false" dbms="postgresql,mssql,oracle"/>
+    <property name="autoIncrement" value="true" dbms="h2"/>
+
+	<changeSet id="1.0.1-createUserTable" author="developer" context="update" runInTransaction="false" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="t_template"/>
+			</not>
+		</preConditions>
+		
+		<createSequence sequenceName="t_template_templateid_seq" incrementBy="1" startValue="1"/>
+
+		<createTable tableName="t_template">
+			<column name="templateid" type="NUMERIC(19,0)" autoIncrement="${autoIncrement}" defaultValueSequenceNext="t_template_templateid_seq">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="testkey" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="testint" type="INTEGER">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		
+		<createIndex tableName="t_template" indexName="k01_template" unique="true">
+			<column name="testkey"/>
+		</createIndex>
+		
+		<comment>Creation of Test table</comment>
+	</changeSet>
+	
+	<changeSet id="1.0.1.01.modifyTemplateTable" author="developer" context="update" runInTransaction="false" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="t_template" columnName="testbalance"/>
+			</not>
+		</preConditions>
+		
+		<addColumn tableName="t_template">
+			<column name="testbalance" type="NUMERIC(28,10)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+
+		<addColumn tableName="t_template">
+			<column name="testdate" type="DATE">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+	
+</databaseChangeLog>
